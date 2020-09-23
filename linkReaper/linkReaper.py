@@ -21,10 +21,18 @@ def readfile(filepath):
     """Read from a local file"""
 
     with open(filepath, 'r') as file:
-        contents = file.read()
-        regex = '<a href=["\' ]http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
-        urls = re.findall(regex, contents)
-        # parse through to find urls
+        regex = 'http[s]?:\/\/(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+'
+        urls = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', file.read())
+        urls = list(dict.fromkeys(urls))
+
+
+        for link in urls:
+            resp = request.urlopen(link)
+            if resp.code == 200:
+                click.echo(click.style("GOOD " + str(resp.code) + " " + link, fg='green'))
+
+            if resp.code == 403:
+                click.echo(click.style("BAD " + str(resp.code) + " " + link, fg='red'))
 
 
 @main.command()
