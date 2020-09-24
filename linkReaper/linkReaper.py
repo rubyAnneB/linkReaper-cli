@@ -34,7 +34,7 @@ def retrieve_codes(links):
     # goes through the list of links and retrieves the htpp responses and displays them
     for link in links:
         try:
-            pool = urllib3.PoolManager()
+            pool = urllib3.PoolManager(num_pools=50)
             response = pool.request('HEAD', link)
             if 300 > response.status <= 200:
                 # successful responses
