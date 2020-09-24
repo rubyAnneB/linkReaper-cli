@@ -1,6 +1,7 @@
 import click
 import re
 import urllib3
+from urllib3 import request
 
 
 @click.group()
@@ -15,19 +16,25 @@ def readfile(filepath, s):
     """Read from a local file"""
 
     with open(filepath, 'r') as file:
-        urls = []
-        if s:
-            urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', file.read())
+        urls = collect_links(file.read(), s)
 
-            for link in urls_raw:
-                urls.append(re.sub("http", "https", link))
+    retrieve_codes(urls)
 
-        else:
-            urls = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', file.read())
-            click.echo(urls)
-        r = []
-        [r.append(x) for x in urls if x not in r]
-        retrieve_codes(r)
+
+@main.command()
+@click.argument('url', default="")
+@click.option('--s', '-s', is_flag=True)
+def reqpage(url, s):
+    """Input a url to check page for dead links"""
+    try:
+        pool = urllib3.PoolManager()
+        res = pool.request('GET', url)
+        # click.echo(res.data)
+    except:
+        click.echo("Url entered is not valid. Please input a different url.")
+    else:
+        urls = collect_links(res.data.decode('utf-8'), s)
+        retrieve_codes(urls)
 
 
 def retrieve_codes(links):
@@ -52,16 +59,25 @@ def retrieve_codes(links):
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
         except Exception:
-            click.echo(click.style("Irregular - Code        :" + str(response.status) + " " + link, fg='yellow'))
+            click.echo(click.style("Irregular - Code        : " + str(response.status) + " " + link, fg='yellow'))
 
 
-@main.command()
-# @click.argument('name')
-@click.argument('name', type=click.Path(exists=True))
-def reqpage(name):
-    """Go to given url"""
-    click.echo("go to web page")
-    click.echo(name)
+def collect_links(raw_data, secure):
+    urls = []
+    unique_urls = []
+
+    if secure:
+        urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', raw_data)
+        [urls.append(x) for x in urls_raw if x not in urls]
+
+        for link in urls:
+            unique_urls.append(re.sub("http", "https", link))
+
+    else:
+        urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', raw_data)
+        [unique_urls.append(x) for x in urls_raw if x not in unique_urls]
+
+    return unique_urls
 
 
 if __name__ == '__main__':
