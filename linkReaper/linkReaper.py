@@ -1,13 +1,7 @@
-from urllib3 import request
 import click
 import re
 import urllib3
 
-
-#
-# @click.command()
-# @click.argument('filename', default="", type=click.Path(exists=True), help='file path to check')
-# @click.option('--s', default="", help='if you want to check if the http schemes work with https-requires a filename')
 
 @click.group()
 def main():
@@ -16,14 +10,21 @@ def main():
 
 @main.command()
 @click.argument('filepath', type=click.Path(exists=True, readable=True))
-# @click.argument('text', default="", type=click.Path(exists=True), help='file path to html file')
-def readfile(filepath):
+@click.option('--s', '-s', is_flag=True)
+def readfile(filepath, s):
     """Read from a local file"""
 
-    # TODO: get support for HTTP to HTTPS
-
     with open(filepath, 'r') as file:
-        urls = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', file.read())
+        urls = []
+        if s:
+            urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', file.read())
+
+            for link in urls_raw:
+                urls.append(re.sub("http", "https", link))
+
+        else:
+            urls = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', file.read())
+            click.echo(urls)
         r = []
         [r.append(x) for x in urls if x not in r]
         retrieve_codes(r)
@@ -32,7 +33,6 @@ def readfile(filepath):
 def retrieve_codes(links):
     # goes through the list of links and retrieves the htpp responses and displays them
     for link in links:
-
         try:
             pool = urllib3.PoolManager()
             response = pool.request('HEAD', link)
@@ -52,7 +52,7 @@ def retrieve_codes(links):
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
         except Exception:
-            click.echo(click.style("Irregular -  Code       :" + str(response.status) + " " + link, fg='yellow'))
+            click.echo(click.style("Irregular - Code        :" + str(response.status) + " " + link, fg='yellow'))
 
 
 @main.command()
