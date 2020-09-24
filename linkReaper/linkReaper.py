@@ -1,7 +1,6 @@
 import click
 import re
 import urllib3
-from urllib3 import request
 
 
 @click.group()
@@ -11,9 +10,9 @@ def main():
 
 @main.command()
 @click.argument('filepath', type=click.Path(exists=True, readable=True))
-@click.option('--s', '-s', is_flag=True)
+@click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
 def readfile(filepath, s):
-    """Read from a local file"""
+    """Read from a local file and parse through the file for links"""
 
     with open(filepath, 'r') as file:
         urls = collect_links(file.read(), s)
@@ -23,13 +22,12 @@ def readfile(filepath, s):
 
 @main.command()
 @click.argument('url', default="")
-@click.option('--s', '-s', is_flag=True)
-def reqpage(url, s):
+@click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
+def weblink(url, s):
     """Input a url to check page for dead links"""
     try:
         pool = urllib3.PoolManager()
         res = pool.request('GET', url)
-        # click.echo(res.data)
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
@@ -38,7 +36,7 @@ def reqpage(url, s):
 
 
 def retrieve_codes(links):
-    # goes through the list of links and retrieves the htpp responses and displays them
+    """retrieves the http codes returned by the links"""
     for link in links:
         try:
             pool = urllib3.PoolManager(num_pools=50)
@@ -63,6 +61,8 @@ def retrieve_codes(links):
 
 
 def collect_links(raw_data, secure):
+    """parses through the raw data to find links and removes duplicates, if secure is true, parses through for http
+    and turns them into https """
     urls = []
     unique_urls = []
 
