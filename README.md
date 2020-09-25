@@ -23,7 +23,7 @@ of the result. These are color coded for the user's convenience and for easy ide
 * Optimized to search only through the headers rather than full bodies
     * Doesn't download the full page when looking for a response
  
- ###Installation
+### Installation
  Make sure that [Python](https://www.python.org/) is installed on your machine first then execute the following commands on your terminal:
  
  Copy the code into your machine
@@ -37,7 +37,7 @@ This command will install the program along with its dependencies
     
     pip install .
 
-##Usage
+## Usage
 
 This program has two main capabilities:
 1. Find broken links in local html files
@@ -45,7 +45,7 @@ This program has two main capabilities:
 
 Entering the program name with no arguments will show the help page.
 
-####Local files
+#### Local files
 Command:
 Look through local file
 
@@ -56,7 +56,7 @@ Check if the http links work with the https scheme
     linkreaper readfile -s [file path]
     
     
-####Website
+#### Website
 Command:
 Look through a webpage
 
@@ -69,4 +69,5 @@ Check if the http links work with the https scheme
 * [Click](https://click.palletsprojects.com/en/7.x/)
 * [Colorama](https://pypi.org/project/colorama/) - Required for colour on Windows
 * [urllib3](https://urllib3.readthedocs.io/en/latest/)
+
 
