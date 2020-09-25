@@ -19,9 +19,11 @@ def main():
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
 def readfile(filepath, s):
     """Read from a local file and parse through the file for links"""
-    with open(filepath, 'r') as file:
-        urls = collect_links(file.read(), s)
-
+    try:
+        with open(filepath, 'r') as file:
+            urls = collect_links(file.read(), s)
+    except PermissionError:
+        click.echo("Invalid path- permission denied")
     retrieve_codes(urls)
 
 
