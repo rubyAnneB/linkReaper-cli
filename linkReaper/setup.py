@@ -7,7 +7,7 @@ setup(
     py_modules=['linkReaper'],
     entry_points={
         'console_scripts': [
-            'linkreap= linkReaper:main',
+            'linkreaper= linkReaper:main',
 
         ]
     }
