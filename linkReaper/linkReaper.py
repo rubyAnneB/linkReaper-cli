@@ -1,3 +1,9 @@
+# Name: linkReaper
+# Version: 0.1
+# Author: Ruby Anne Bautista
+# Description: A cli tool for finding dead links in local files given
+# file path and searches through web pages for dead links given url
+
 import click
 import re
 import urllib3
@@ -57,6 +63,7 @@ def retrieve_codes(links):
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
         except Exception:
+            # irregular responses
             click.echo(click.style("Irregular - Code        : " + str(response.status) + " " + link, fg='yellow'))
 
 
@@ -66,16 +73,19 @@ def collect_links(raw_data, secure):
     urls = []
     unique_urls = []
 
-    if secure:
+    if secure: # if the user utilises the -s option
         urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', raw_data)
-        [urls.append(x) for x in urls_raw if x not in urls]
+        # get rid of duplicate links
+        [urls.append(link) for link in urls_raw if link not in urls]
 
         for link in urls:
+            # changes the scheme of the links from http to https
             unique_urls.append(re.sub("http", "https", link))
 
     else:
         urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', raw_data)
-        [unique_urls.append(x) for x in urls_raw if x not in unique_urls]
+        # get rid of duplicate links
+        [unique_urls.append(link) for link in urls_raw if link not in unique_urls]
 
     return unique_urls
 
