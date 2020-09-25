@@ -19,7 +19,6 @@ def main():
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
 def readfile(filepath, s):
     """Read from a local file and parse through the file for links"""
-
     with open(filepath, 'r') as file:
         urls = collect_links(file.read(), s)
 
@@ -33,6 +32,7 @@ def weblink(url, s):
     """Input a url to check page for dead links"""
     try:
         pool = urllib3.PoolManager()
+        # retrieve the html data from the given url
         res = pool.request('GET', url)
     except:
         click.echo("Url entered is not valid. Please input a different url.")
