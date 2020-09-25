@@ -66,7 +66,7 @@ def retrieve_codes(links):
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
         except Exception:
-            # irregular responses
+            # irregular responses- may return 200 but behaviour is irregular
             click.echo(click.style("Irregular - Code        : " + str(response.status) + " " + link, fg='yellow'))
 
 
