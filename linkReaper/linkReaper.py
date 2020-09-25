@@ -24,6 +24,7 @@ def readfile(filepath, s):
             urls = collect_links(file.read(), s)
     except PermissionError:
         click.echo("Invalid path- permission denied")
+
     retrieve_codes(urls)
 
 
