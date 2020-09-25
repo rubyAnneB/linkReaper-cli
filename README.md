@@ -65,9 +65,9 @@ Look through a webpage
 Check if the http links work with the https scheme
 
     linkreaper readwebsite -s [website url]    
-## Libraries
-* [Click](https://click.palletsprojects.com/en/7.x/)
+## Dependencies
+* [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
 * [Colorama](https://pypi.org/project/colorama/) - Required for colour on Windows
-* [urllib3](https://urllib3.readthedocs.io/en/latest/)
+* [urllib3](https://urllib3.readthedocs.io/en/latest/) - Used to manage connections and make requests
 
 
