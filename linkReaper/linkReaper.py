@@ -31,12 +31,12 @@ def readfile(filepath, s):
 @main.command()
 @click.argument('url', default="")
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
-def weblink(url, s):
+def readwebsite(url, s):
     """Input a url to check page for dead links"""
     try:
         pool = urllib3.PoolManager()
         # retrieve the html data from the given url
-        res = pool.request('GET', url)
+        res = pool.request('GET', url, timeout=5.0)
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
@@ -49,7 +49,7 @@ def retrieve_codes(links):
     for link in links:
         try:
             pool = urllib3.PoolManager(num_pools=50)
-            response = pool.request('HEAD', link)
+            response = pool.request('HEAD', link, timeout=5.0)
             if 300 > response.status <= 200:
                 # successful responses
                 click.echo(click.style("GOOD      - Successful  : " + str(response.status) + " " + link, fg='green'))
@@ -76,7 +76,7 @@ def collect_links(raw_data, secure):
     urls = []
     unique_urls = []
 
-    if secure: # if the user utilises the -s option
+    if secure:  # if the user utilises the -s option
         urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', raw_data)
         # get rid of duplicate links
         [urls.append(link) for link in urls_raw if link not in urls]
