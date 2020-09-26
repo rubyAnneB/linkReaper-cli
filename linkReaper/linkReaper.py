@@ -58,10 +58,12 @@ def retrieve_codes(links):
                 click.echo(click.style("BAD       - Redirect    : " + str(response.status) + " " + link, fg='red'))
             elif 500 > response.status <= 400:
                 # client error responses
-                click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
+                click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
+
             elif 600 > response.status <= 500:
                 # server error response
-                click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
+                click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
+
             else:
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
