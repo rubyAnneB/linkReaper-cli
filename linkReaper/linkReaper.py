@@ -40,7 +40,8 @@ def readwebsite(url, s):
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
-        urls = collect_links(res.data.decode('utf-8'), s)
+        # this gets an error when passing in http://google.com
+        urls = collect_links(res.data.decode('ISO-8859-1'), s)
         retrieve_codes(urls)
 
 
