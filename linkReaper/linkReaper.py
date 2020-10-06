@@ -40,7 +40,8 @@ def readwebsite(url, s):
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
-        urls = collect_links(res.data.decode('utf-8'), s)
+        # this gets an error when passing in http://google.com
+        urls = collect_links(res.data.decode('ISO-8859-1'), s)
         retrieve_codes(urls)
 
 
@@ -75,15 +76,16 @@ def retrieve_codes(links):
 def collect_links(raw_data, secure):
     """parses through the raw data to find links and removes duplicates, if secure is true, parses through for http
     and turns them into https """
-    urls = []
+
     unique_urls = []
 
     if secure:  # if the user utilises the -s option
+
         urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', raw_data)
         # get rid of duplicate links
-        [urls.append(link) for link in urls_raw if link not in urls]
+        urls_raw = list(dict.fromkeys(urls_raw))
 
-        for link in urls:
+        for link in urls_raw:
             # changes the scheme of the links from http to https
             unique_urls.append(re.sub("http", "https", link))
 
