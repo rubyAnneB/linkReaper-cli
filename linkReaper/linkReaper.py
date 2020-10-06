@@ -46,11 +46,14 @@ def readwebsite(url, s):
 
 
 def retrieve_codes(links):
+
     """retrieves the http codes returned by the links"""
     for link in links:
+
         try:
             pool = urllib3.PoolManager(num_pools=50)
             response = pool.request('HEAD', link, timeout=5.0)
+
             if 300 > response.status <= 200:
                 # successful responses
                 click.echo(click.style("GOOD      - Successful  : " + str(response.status) + " " + link, fg='green'))
@@ -70,7 +73,7 @@ def retrieve_codes(links):
 
         except Exception:
             # irregular responses- may return 200 but behaviour is irregular
-            click.echo(click.style("Irregular - Code        : " + str(response.status) + " " + link, fg='yellow'))
+            click.echo(click.style("Irregular link        : " + link, fg='yellow'))
 
 
 def collect_links(raw_data, secure):
