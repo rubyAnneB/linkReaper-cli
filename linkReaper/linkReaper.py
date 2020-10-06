@@ -31,6 +31,9 @@ def readfile(filepath, s):
 @main.command()
 @click.argument('url', default="")
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
+@click.option('--all', '-all', is_flag=True, help='Prints all the links and their status codes')
+@click.option('--good', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
+@click.option('--bad', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
 def readwebsite(url, s):
     """Input a url to check page for dead links"""
     try:
