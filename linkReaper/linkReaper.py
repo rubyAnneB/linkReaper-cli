@@ -17,6 +17,9 @@ def main():
 @main.command()
 @click.argument('filepath', type=click.Path(exists=True, readable=True))
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
+@click.option('--all', '-all', is_flag=True, help='Prints all the links and their status codes')
+@click.option('--good', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
+@click.option('--bad', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
 def readfile(filepath, s):
     """Read from a local file and parse through the file for links"""
     try:
