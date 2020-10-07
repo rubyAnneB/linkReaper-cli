@@ -17,10 +17,10 @@ def main():
 @main.command()
 @click.argument('filepath', type=click.Path(exists=True, readable=True))
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
-@click.option('--all', '-all', is_flag=True, help='Prints all the links and their status codes')
-@click.option('--good', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
-@click.option('--bad', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
-def readfile(filepath, s):
+@click.option('--a', '-all', is_flag=True, default=True, help='Prints all the links and their status codes')
+@click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
+@click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
+def readfile(filepath, s, a, g, b):
     """Read from a local file and parse through the file for links"""
     try:
         with open(filepath, 'r') as file:
@@ -28,17 +28,18 @@ def readfile(filepath, s):
     except PermissionError:
         click.echo("Invalid path- permission denied")
 
-    retrieve_codes(urls)
+    retrieve_codes(urls, a, g, b)
 
 
 @main.command()
 @click.argument('url', default="")
 @click.option('--s', '-s', is_flag=True, help='change the http link schemes into https and output results')
-@click.option('--all', '-all', is_flag=True, help='Prints all the links and their status codes')
-@click.option('--good', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
-@click.option('--bad', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
-def readwebsite(url, s):
+@click.option('--a', '-all', is_flag=True, default=True, help='Prints all the links and their status codes')
+@click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
+@click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
+def readwebsite(url, s, a, g, b):
     """Input a url to check page for dead links"""
+
     try:
         pool = urllib3.PoolManager()
         # retrieve the html data from the given url
@@ -48,10 +49,10 @@ def readwebsite(url, s):
     else:
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
-        retrieve_codes(urls)
+        retrieve_codes(urls, a, g, b)
 
 
-def retrieve_codes(links):
+def retrieve_codes(links, all_links, good_links, bad_links):
 
     """retrieves the http codes returned by the links"""
     for link in links:
@@ -62,24 +63,32 @@ def retrieve_codes(links):
 
             if 300 > response.status <= 200:
                 # successful responses
-                click.echo(click.style("GOOD      - Successful  : " + str(response.status) + " " + link, fg='green'))
+                if not bad_links:
+                    click.echo(click.style("GOOD      - Successful  : " + str(response.status)
+                                           + " " + link, fg='green'))
+
             elif 400 > response.status <= 300:
                 # redirection message
-                click.echo(click.style("BAD       - Redirect    : " + str(response.status) + " " + link, fg='red'))
+                if not good_links:
+                    click.echo(click.style("BAD       - Redirect    : " + str(response.status) + " " + link, fg='red'))
+
             elif 500 > response.status <= 400:
                 # client error responses
-                click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
+                if not good_links:
+                    click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
 
             elif 600 > response.status <= 500:
                 # server error response
-                click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
+                if not good_links:
+                    click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
 
             else:
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
 
         except Exception:
             # irregular responses- may return 200 but behaviour is irregular
-            click.echo(click.style("Irregular link        : " + link, fg='yellow'))
+            if not good_links:
+                click.echo(click.style("Irregular link          : " + link, fg='yellow'))
 
 
 def collect_links(raw_data, secure):
