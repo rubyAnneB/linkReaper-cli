@@ -68,8 +68,8 @@ def output_codes(links, all_links, good_links, bad_links):
     for link in links:
 
         try:
-            pool = urllib3.PoolManager(num_pools=50)
-            response = pool.request('HEAD', link, timeout=5.0)
+            pool = urllib3.PoolManager(num_pools=50, timeout=3.0)
+            response = pool.request('HEAD', link, retries=10)
 
             if 300 > response.status <= 200 and not bad_links:
                 # successful responses
