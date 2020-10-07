@@ -100,25 +100,25 @@ def output_json(links, all_links, good_links, bad_links):
     json_responses = []
 
     click.echo("Retrieving website responses...")
+    with click.progressbar(links) as bar:
+        for link in bar:
+            website_response = {
+                "url": link,
+                "status": ""
+            }
+            try:
+                pool = urllib3.PoolManager(num_pools=50)
+                response = pool.request('HEAD', link, timeout=5.0)
 
-    for link in links:
-        website_response = {
-            "url": link,
-            "status": ""
-        }
-        try:
-            pool = urllib3.PoolManager(num_pools=50)
-            response = pool.request('HEAD', link, timeout=5.0)
+                website_response["status"] = response.status
 
-            website_response["status"] = response.status
+            except Exception:
+                website_response["status"] = "irregular"
 
-        except Exception:
-            website_response["status"] = "irregular"
-
-        if 300 > website_response["status"] <= 200 and not bad_links:
-            json_responses.append(website_response)
-        elif (website_response["status"] > 300 or website_response["status"] == "irregular") and not good_links:
-            json_responses.append(website_response)
+            if 300 > website_response["status"] <= 200 and not bad_links:
+                json_responses.append(website_response)
+            elif (website_response["status"] > 300 or website_response["status"] == "irregular") and not good_links:
+                json_responses.append(website_response)
 
     click.echo(json_responses)
 
