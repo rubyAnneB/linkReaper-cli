@@ -97,8 +97,9 @@ def output_codes(links, all_links, good_links, bad_links):
 
 
 def output_json(links, all_links, good_links, bad_links):
-    # TODO: create a list of dictionaries to turn into json
     json_responses = []
+
+    click.echo("Retrieving website responses...")
 
     for link in links:
         website_response = {
@@ -114,11 +115,12 @@ def output_json(links, all_links, good_links, bad_links):
         except Exception:
             website_response["status"] = "irregular"
 
+        if 300 > website_response["status"] <= 200 and not bad_links:
+            json_responses.append(website_response)
+        elif (website_response["status"] > 300 or website_response["status"] == "irregular") and not good_links:
+            json_responses.append(website_response)
 
-
-        json_responses.append(website_response)
-
-    print(json_responses)
+    click.echo(json_responses)
 
 
 def collect_links(raw_data, secure):
