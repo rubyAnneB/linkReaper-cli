@@ -7,6 +7,7 @@
 import click
 import re
 import urllib3
+import json
 
 
 @click.group()
@@ -20,7 +21,8 @@ def main():
 @click.option('--a', '-all', is_flag=True, default=True, help='Prints all the links and their status codes')
 @click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
 @click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
-def readfile(filepath, s, a, g, b):
+@click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
+def readfile(filepath, s, a, g, b, j):
     """Read from a local file and parse through the file for links"""
     try:
         with open(filepath, 'r') as file:
@@ -37,7 +39,8 @@ def readfile(filepath, s, a, g, b):
 @click.option('--a', '-all', is_flag=True, default=True, help='Prints all the links and their status codes')
 @click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
 @click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
-def readwebsite(url, s, a, g, b):
+@click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
+def readwebsite(url, s, a, g, b, j):
     """Input a url to check page for dead links"""
 
     try:
@@ -59,6 +62,8 @@ def retrieve_codes(links, all_links, good_links, bad_links):
         try:
             pool = urllib3.PoolManager(num_pools=50)
             response = pool.request('HEAD', link, timeout=5.0)
+
+            click.echo(response.status)
 
             if 300 > response.status <= 200 and not bad_links:
                 # successful responses
