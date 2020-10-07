@@ -98,7 +98,27 @@ def output_codes(links, all_links, good_links, bad_links):
 
 def output_json(links, all_links, good_links, bad_links):
     # TODO: create a list of dictionaries to turn into json
-    click.echo("This is output file")
+    json_responses = []
+
+    for link in links:
+        website_response = {
+            "url": link,
+            "status": ""
+        }
+        try:
+            pool = urllib3.PoolManager(num_pools=50)
+            response = pool.request('HEAD', link, timeout=5.0)
+
+            website_response["status"] = response.status
+
+        except Exception:
+            website_response["status"] = "irregular"
+
+
+
+        json_responses.append(website_response)
+
+    print(json_responses)
 
 
 def collect_links(raw_data, secure):
