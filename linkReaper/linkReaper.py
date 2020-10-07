@@ -30,7 +30,7 @@ def readfile(filepath, s, a, g, b, j):
     except PermissionError:
         click.echo("Invalid path- permission denied")
 
-    retrieve_codes(urls, a, g, b)
+    output_codes(urls, a, g, b)
 
 
 @main.command()
@@ -52,10 +52,10 @@ def readwebsite(url, s, a, g, b, j):
     else:
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
-        retrieve_codes(urls, a, g, b)
+        output_codes(urls, a, g, b)
 
 
-def retrieve_codes(links, all_links, good_links, bad_links):
+def output_codes(links, all_links, good_links, bad_links):
     """retrieves the http codes returned by the links"""
     for link in links:
 
