@@ -100,6 +100,7 @@ def output_json(links, all_links, good_links, bad_links):
     json_responses = []
 
     click.echo("Retrieving website responses...")
+
     with click.progressbar(links) as bar:
         for link in bar:
             website_response = {
