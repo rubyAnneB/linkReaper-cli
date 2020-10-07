@@ -53,7 +53,6 @@ def readwebsite(url, s, a, g, b):
 
 
 def retrieve_codes(links, all_links, good_links, bad_links):
-
     """retrieves the http codes returned by the links"""
     for link in links:
 
@@ -61,26 +60,21 @@ def retrieve_codes(links, all_links, good_links, bad_links):
             pool = urllib3.PoolManager(num_pools=50)
             response = pool.request('HEAD', link, timeout=5.0)
 
-            if 300 > response.status <= 200:
+            if 300 > response.status <= 200 and not bad_links:
                 # successful responses
-                if not bad_links:
-                    click.echo(click.style("GOOD      - Successful  : " + str(response.status)
-                                           + " " + link, fg='green'))
+                click.echo(click.style("GOOD      - Successful  : " + str(response.status) + " " + link, fg='green'))
 
-            elif 400 > response.status <= 300:
+            elif 400 > response.status <= 300 and not good_links:
                 # redirection message
-                if not good_links:
-                    click.echo(click.style("BAD       - Redirect    : " + str(response.status) + " " + link, fg='red'))
+                click.echo(click.style("BAD       - Redirect    : " + str(response.status) + " " + link, fg='red'))
 
-            elif 500 > response.status <= 400:
+            elif 500 > response.status <= 400 and not good_links:
                 # client error responses
-                if not good_links:
-                    click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
+                click.echo(click.style("BAD       - Server Error: " + str(response.status) + " " + link, fg='red'))
 
-            elif 600 > response.status <= 500:
+            elif 600 > response.status <= 500 and not good_links:
                 # server error response
-                if not good_links:
-                    click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
+                click.echo(click.style("BAD       - Client Error: " + str(response.status) + " " + link, fg='red'))
 
             else:
                 click.echo(click.style("Unknown " + str(response.status) + " " + link, fg='red'))
