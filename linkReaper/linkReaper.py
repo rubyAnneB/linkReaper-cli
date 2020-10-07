@@ -30,7 +30,12 @@ def readfile(filepath, s, a, g, b, j):
     except PermissionError:
         click.echo("Invalid path- permission denied")
 
-    output_codes(urls, a, g, b)
+    else:
+
+        if j:
+            output_json(urls, a, g, b)
+        else:
+            output_codes(urls, a, g, b)
 
 
 @main.command()
@@ -42,7 +47,6 @@ def readfile(filepath, s, a, g, b, j):
 @click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
 def readwebsite(url, s, a, g, b, j):
     """Input a url to check page for dead links"""
-
     try:
         pool = urllib3.PoolManager()
         # retrieve the html data from the given url
@@ -52,7 +56,11 @@ def readwebsite(url, s, a, g, b, j):
     else:
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
-        output_codes(urls, a, g, b)
+
+        if j:
+            output_json(urls, a, g, b)
+        else:
+            output_codes(urls, a, g, b)
 
 
 def output_codes(links, all_links, good_links, bad_links):
@@ -62,8 +70,6 @@ def output_codes(links, all_links, good_links, bad_links):
         try:
             pool = urllib3.PoolManager(num_pools=50)
             response = pool.request('HEAD', link, timeout=5.0)
-
-            click.echo(response.status)
 
             if 300 > response.status <= 200 and not bad_links:
                 # successful responses
@@ -88,6 +94,11 @@ def output_codes(links, all_links, good_links, bad_links):
             # irregular responses- may return 200 but behaviour is irregular
             if not good_links:
                 click.echo(click.style("Irregular link          : " + link, fg='yellow'))
+
+
+def output_json(links, all_links, good_links, bad_links):
+    # TODO: create a list of dictionaries to turn into json
+    click.echo("This is output file")
 
 
 def collect_links(raw_data, secure):
