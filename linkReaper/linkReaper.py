@@ -31,6 +31,10 @@ def readfile(filepath, s, a, g, b, j):
         click.echo("Invalid path- permission denied")
 
     else:
+        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
+        if b and g:
+            b = False
+            g = False
 
         if j:
             output_json(urls, a, g, b)
@@ -56,6 +60,11 @@ def readwebsite(url, s, a, g, b, j):
     else:
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
+
+        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
+        if b and g:
+            b = False
+            g = False
 
         if j:
             output_json(urls, a, g, b)
@@ -119,10 +128,11 @@ def output_json(links, all_links, good_links, bad_links):
             except Exception:
                 website_response["status"] = "irregular"
 
+
             # determine whether to add the response to the list depending on the options the user inputted
-            if 300 > website_response["status"] <= 200 and not bad_links:
+            if website_response["status"] != "irregular" and 300 > website_response["status"] <= 200 and not bad_links:
                 json_responses.append(website_response)
-            elif (website_response["status"] > 300 or website_response["status"] == "irregular") and not good_links:
+            elif (website_response["status"] == "irregular" or website_response["status"] > 300) and not good_links:
                 json_responses.append(website_response)
 
     click.echo(json_responses)
