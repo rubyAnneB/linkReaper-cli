@@ -60,6 +60,11 @@ def readwebsite(url, s, a, g, b, j):
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
 
+        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
+        if b and g:
+            b = False
+            g = False
+
         if j:
             output_json(urls, a, g, b)
         else:
