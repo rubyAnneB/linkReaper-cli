@@ -7,6 +7,8 @@
 import click
 import re
 import urllib3
+import json
+
 
 @click.group()
 def main():
@@ -29,15 +31,6 @@ def readfile(filepath, s, a, g, b, j):
         click.echo("Invalid path- permission denied")
 
     else:
-        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
-        if b and g:
-            b = False
-            g = False
-
-        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
-        if b and g:
-            b = False
-            g = False
 
         if j:
             output_json(urls, a, g, b)
@@ -64,11 +57,6 @@ def readwebsite(url, s, a, g, b, j):
         # this gets an error when passing in http://google.com
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
 
-        # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
-        if b and g:
-            b = False
-            g = False
-
         if j:
             output_json(urls, a, g, b)
         else:
@@ -80,8 +68,8 @@ def output_codes(links, all_links, good_links, bad_links):
     for link in links:
 
         try:
-            pool = urllib3.PoolManager(num_pools=50, timeout=3.0)
-            response = pool.request('HEAD', link, retries=10)
+            pool = urllib3.PoolManager(num_pools=50)
+            response = pool.request('HEAD', link, timeout=5.0)
 
             if 300 > response.status <= 200 and not bad_links:
                 # successful responses
@@ -109,13 +97,13 @@ def output_codes(links, all_links, good_links, bad_links):
 
 
 def output_json(links, all_links, good_links, bad_links):
-    """goes through all the links and gets the response code from them and puts the url and response code into a json
-    array """
+    """Goes through a list of links, retrieves the response code and outputs the results in a json array with the url
+    and corresponding code user has the option to display only certain types of links based on if the results were
+    bad or good """
     json_responses = []
 
     click.echo("Retrieving website responses...")
-
-    # this creates a progress bar to display the progress as each link is processed
+    # added progress bar to show the progress through each link
     with click.progressbar(links) as bar:
         for link in bar:
             website_response = {
@@ -123,7 +111,6 @@ def output_json(links, all_links, good_links, bad_links):
                 "status": ""
             }
             try:
-                # retrieve the response from the website
                 pool = urllib3.PoolManager(num_pools=50)
                 response = pool.request('HEAD', link, timeout=5.0)
 
@@ -132,10 +119,10 @@ def output_json(links, all_links, good_links, bad_links):
             except Exception:
                 website_response["status"] = "irregular"
 
-            # determines whether the website_response is to be added depending on the options sent
-            if website_response["status"] != "irregular" and 300 > website_response["status"] <= 200 and not bad_links:
+            # determine whether to add the response to the list depending on the options the user inputted
+            if 300 > website_response["status"] <= 200 and not bad_links:
                 json_responses.append(website_response)
-            elif (website_response["status"] == "irregular" or website_response["status"] > 300) and not good_links:
+            elif (website_response["status"] > 300 or website_response["status"] == "irregular") and not good_links:
                 json_responses.append(website_response)
 
     click.echo(json_responses)
