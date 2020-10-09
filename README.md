@@ -22,6 +22,12 @@ of the result. These are color coded for the user's convenience and for easy ide
     * all http links found will have their scheme changed to https and will output the result
 * Optimized to search only through the headers rather than full bodies
     * Doesn't download the full page when looking for a response
+* Option to only output only good, only bad and all links
+    * good option will only output links with 200 response code
+    * bad option will output anything else
+    * all option is default and will output all
+* Option to have the outputs in json format
+    * This works with the good,bad and all output options
  
 ### Installation
  Make sure that [Python](https://www.python.org/) is installed on your machine first then execute the following commands on your terminal:
@@ -46,7 +52,24 @@ This program has two main capabilities:
 Entering the program name with no arguments will show the help page.
 
 #### Local files
-Command:
+##### options
+**-s , --s**  
+Checks if http links works as https 
+
+**-bad, --b**  
+Outputs only the links that don't have a successful response
+
+**-good, --g**  
+Outputs only the links that have a successful response
+
+**-all, --a**  
+The default, outputs all the links
+
+**-json, --j**  
+Outputs the results as a json array. This options works with the '-good', '-all', and '-bad' options.
+
+
+Command:  
 Look through local file
 
     linkreaper readfile [file path]
@@ -55,16 +78,22 @@ Check if the http links work with the https scheme
 
     linkreaper readfile -s [file path]
     
-    
+Have all the good links outputted in json format
+
+    linkreaper readfile --g --j [filepath]   
 #### Website
-Command:
+Command:  
 Look through a webpage
 
     linkreaper readwebsite [website url]
 
 Check if the http links work with the https scheme
 
-    linkreaper readwebsite -s [website url]    
+    linkreaper readwebsite -s [website url]
+    
+Have all the http links that don't work as https outputted as json
+    
+    linkreaper readwebsite -s --b --j [website url]    
 ## Dependencies
 * [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
 * [Colorama](https://pypi.org/project/colorama/) - Required for colour on Windows
