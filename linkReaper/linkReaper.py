@@ -106,10 +106,13 @@ def output_codes(links, all_links, good_links, bad_links):
 
 
 def output_json(links, all_links, good_links, bad_links):
+    """Goes through a list of links, retrieves the response code and outputs the results in a json array with the url
+    and corresponding code user has the option to display only certain types of links based on if the results were
+    bad or good """
     json_responses = []
 
     click.echo("Retrieving website responses...")
-
+    # added progress bar to show the progress through each link
     with click.progressbar(links) as bar:
         for link in bar:
             website_response = {
@@ -125,6 +128,8 @@ def output_json(links, all_links, good_links, bad_links):
             except Exception:
                 website_response["status"] = "irregular"
 
+
+            # determine whether to add the response to the list depending on the options the user inputted
             if website_response["status"] != "irregular" and 300 > website_response["status"] <= 200 and not bad_links:
                 json_responses.append(website_response)
             elif (website_response["status"] == "irregular" or website_response["status"] > 300) and not good_links:
