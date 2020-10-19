@@ -20,7 +20,9 @@ def main():
 @click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
 @click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
 @click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
-def readfile(filepath, s, a, g, b, j):
+@click.option('--i', '-ignore', is_flag=True, help='Prints out links and their responses in json format',
+              type=click.Path(exists=True, readable=True))
+def readfile(filepath, s, a, g, b, j, i):
     """Read from a local file and parse through the file for links"""
     try:
         with open(filepath, 'r') as file:
