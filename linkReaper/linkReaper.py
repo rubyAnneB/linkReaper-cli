@@ -20,13 +20,20 @@ def main():
 @click.option('--g', '-good', is_flag=True, help='Prints all the good links with 200 HTTP codes')
 @click.option('--b', '-bad', is_flag=True, help='Prints all the bad links with anything other than a 200 HTTP code')
 @click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
-@click.option('--i', '-ignore', is_flag=True, help='Prints out links and their responses in json format',
+@click.option('--ignore', help='Ignores links contained within a separate text file',
               type=click.Path(exists=True, readable=True))
-def readfile(filepath, s, a, g, b, j, i):
+def readfile(filepath, s, a, g, b, j, ignore):
     """Read from a local file and parse through the file for links"""
     try:
         with open(filepath, 'r') as file:
             urls = collect_links(file.read(), s)
+
+        if ignore:
+            with open(ignore, 'r') as ignore_file:
+                urls_to_ignore = collect_links(ignore_file.read(), s)
+                # remove blacklisted urls
+                urls = list(set(urls) ^ set(urls_to_ignore))
+
     except PermissionError:
         click.echo("Invalid path- permission denied")
 
