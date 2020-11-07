@@ -65,7 +65,7 @@ def readwebsite(url, s, a, g, b, j):
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
-        # this gets an error when passing in http://google.com
+
         urls = collect_links(res.data.decode('ISO-8859-1'), s)
 
         # if the user inputted both g and b, all the links will be displayed and 'a' will override both options
@@ -77,6 +77,21 @@ def readwebsite(url, s, a, g, b, j):
             output_json(urls, a, g, b)
         else:
             output_codes(urls, a, g, b)
+
+
+@main.command()
+@click.argument('apiurl', default="")
+def readtelescope(apiurl):
+    try:
+        pool = urllib3.PoolManager()
+        # retrieve the html data from the given url
+        res = pool.request('GET', apiurl, timeout=5.0)
+    except:
+        click.echo("Url entered is not valid. Please input a different url.")
+    else:
+
+        click.echo("Hello")
+
 
 
 def output_codes(links, all_links, good_links, bad_links):
