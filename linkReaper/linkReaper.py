@@ -8,7 +8,7 @@ import click
 import re
 import urllib3
 import json
-
+from bs4 import BeautifulSoup
 
 @click.group()
 def main():
@@ -89,12 +89,17 @@ def readtelescope(apiurl):
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
-        click.echo("Hello")
-        posts = json.loads(res.data.decode('utf-8'))
+
+        posts = json.loads(res.data.decode('ISO-8859-1'))
+        click.echo(res.data.decode('ISO-8859-1'))
         urls = collect_links(posts, api=True, baseurl=apiurl)
 
         for url in urls:
-            readwebsite(url)
+            click.echo(click.style("Post Link: " + url, fg='magenta'))
+            res = getwebsiteresponse(url)
+            posturls = collect_links(res.data.decode('ISO-8859-1'))
+            click.echo(res.data.decode('ISO-8859-1'))
+            output_codes(posturls)
 
 
 def getwebsiteresponse(url):
@@ -190,7 +195,6 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
             # changes the scheme of the links from http to https
             unique_urls.append(re.sub("http", "https", link))
     elif api:
-        click.echo("API CALLED" + baseurl)
         for postId in raw_data:
             unique_urls.append(baseurl + "/" + postId['id'])
     else:
