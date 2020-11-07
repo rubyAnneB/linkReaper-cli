@@ -7,6 +7,8 @@
 import click
 import re
 import urllib3
+import json
+
 
 @click.group()
 def main():
@@ -89,9 +91,10 @@ def readtelescope(apiurl):
     except:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
-
         click.echo("Hello")
-
+        posts = json.loads(res.data.decode('utf-8'))
+        urls = collect_links(posts, api=True, baseurl=apiurl)
+        output_codes(urls)
 
 
 def output_codes(links, all_links, good_links, bad_links):
@@ -159,7 +162,7 @@ def output_json(links, all_links, good_links, bad_links):
     click.echo(json_responses)
 
 
-def collect_links(raw_data, secure):
+def collect_links(raw_data, secure=False, api=False, baseurl=""):
     """parses through the raw data to find links and removes duplicates, if secure is true, parses through for http
     and turns them into https """
 
@@ -174,11 +177,15 @@ def collect_links(raw_data, secure):
         for link in urls_raw:
             # changes the scheme of the links from http to https
             unique_urls.append(re.sub("http", "https", link))
-
+    elif api:
+        click.echo("API CALLED" + baseurl)
+        for postId in raw_data:
+            unique_urls.append(baseurl + "/" + postId['id'])
     else:
         urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', raw_data)
         # get rid of duplicate links
         [unique_urls.append(link) for link in urls_raw if link not in unique_urls]
+
 
     return unique_urls
 
