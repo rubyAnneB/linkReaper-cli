@@ -8,7 +8,7 @@ import click
 import re
 import urllib3
 import json
-from bs4 import BeautifulSoup
+
 
 @click.group()
 def main():
@@ -91,19 +91,16 @@ def readtelescope(apiurl):
     else:
 
         posts = json.loads(res.data.decode('ISO-8859-1'))
-        click.echo(res.data.decode('ISO-8859-1'))
         urls = collect_links(posts, api=True, baseurl=apiurl)
 
         for url in urls:
-            click.echo(click.style("Post Link: " + url, fg='magenta'))
+            click.echo(click.style("\nPost Link: " + url, fg='magenta'))
             res = getwebsiteresponse(url)
             posturls = collect_links(res.data.decode('ISO-8859-1'))
-            click.echo(res.data.decode('ISO-8859-1'))
             output_codes(posturls)
 
 
 def getwebsiteresponse(url):
-
     try:
         pool = urllib3.PoolManager()
         # retrieve the html data from the given url
@@ -187,7 +184,7 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
 
     if secure:  # if the user utilises the -s option
 
-        urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~]+', raw_data)
+        urls_raw = re.findall(r'http?:[a-zA-Z0-9_.+-/#~%]+', raw_data)
         # get rid of duplicate links
         urls_raw = list(dict.fromkeys(urls_raw))
 
@@ -198,7 +195,8 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
         for postId in raw_data:
             unique_urls.append(baseurl + "/" + postId['id'])
     else:
-        urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', raw_data)
+
+        urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~%]+', raw_data)
         # get rid of duplicate links
         [unique_urls.append(link) for link in urls_raw if link not in unique_urls]
 
