@@ -60,11 +60,9 @@ def readfile(filepath, s, a, g, b, j, ignore):
 @click.option('--j', '-json', is_flag=True, help='Prints out links and their responses in json format')
 def readwebsite(url, s, a, g, b, j):
     """Input a url to check page for dead links"""
-    try:
-        pool = urllib3.PoolManager()
-        # retrieve the html data from the given url
-        res = pool.request('GET', url, timeout=5.0)
-    except:
+    res = getwebsiteresponse(url)
+
+    if res is None:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
 
@@ -94,7 +92,21 @@ def readtelescope(apiurl):
         click.echo("Hello")
         posts = json.loads(res.data.decode('utf-8'))
         urls = collect_links(posts, api=True, baseurl=apiurl)
-        output_codes(urls)
+
+        for url in urls:
+            readwebsite(url)
+
+
+def getwebsiteresponse(url):
+
+    try:
+        pool = urllib3.PoolManager()
+        # retrieve the html data from the given url
+        res = pool.request('GET', url, timeout=5.0)
+    except:
+        res = None
+
+    return res
 
 
 def output_codes(links, good_links=False, bad_links=False):
@@ -130,7 +142,7 @@ def output_codes(links, good_links=False, bad_links=False):
                 click.echo(click.style("Irregular link          : " + link, fg='yellow'))
 
 
-def output_json(links, good_links = False, bad_links= False):
+def output_json(links, good_links=False, bad_links=False):
     """Goes through a list of links, retrieves the response code and outputs the results in a json array with the url
     and corresponding code user has the option to display only certain types of links based on if the results were
     bad or good """
