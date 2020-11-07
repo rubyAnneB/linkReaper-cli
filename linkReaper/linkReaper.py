@@ -46,7 +46,7 @@ def readfile(filepath, s, a, g, b, j, ignore):
             g = False
 
         if j:
-            output_json(urls,  g, b)
+            output_json(urls, g, b)
         else:
             output_codes(urls, g, b)
 
@@ -97,7 +97,7 @@ def readtelescope(apiurl):
         output_codes(urls)
 
 
-def output_codes(links, good_links = False, bad_links = False):
+def output_codes(links, good_links=False, bad_links=False):
     """retrieves the http codes returned by the links"""
     for link in links:
 
@@ -130,7 +130,7 @@ def output_codes(links, good_links = False, bad_links = False):
                 click.echo(click.style("Irregular link          : " + link, fg='yellow'))
 
 
-def output_json(links, all_links, good_links, bad_links):
+def output_json(links, good_links = False, bad_links= False):
     """Goes through a list of links, retrieves the response code and outputs the results in a json array with the url
     and corresponding code user has the option to display only certain types of links based on if the results were
     bad or good """
@@ -185,7 +185,6 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
         urls_raw = re.findall(r'https?:[a-zA-Z0-9_.+-/#~]+', raw_data)
         # get rid of duplicate links
         [unique_urls.append(link) for link in urls_raw if link not in unique_urls]
-
 
     return unique_urls
 
