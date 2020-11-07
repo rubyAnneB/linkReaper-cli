@@ -76,9 +76,9 @@ def readwebsite(url, s, a, g, b, j):
             g = False
 
         if j:
-            output_json(urls,  g, b)
+            output_json(urls, g, b)
         else:
-            output_codes(urls,  g, b)
+            output_codes(urls, g, b)
 
 
 @main.command()
@@ -97,7 +97,7 @@ def readtelescope(apiurl):
         output_codes(urls)
 
 
-def output_codes(links, good_links, bad_links):
+def output_codes(links, good_links = False, bad_links = False):
     """retrieves the http codes returned by the links"""
     for link in links:
 
