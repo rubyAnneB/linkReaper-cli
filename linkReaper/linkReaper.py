@@ -82,11 +82,9 @@ def readwebsite(url, s, a, g, b, j):
 @main.command()
 @click.argument('apiurl', default="")
 def readtelescope(apiurl):
-    try:
-        pool = urllib3.PoolManager()
-        # retrieve the html data from the given url
-        res = pool.request('GET', apiurl, timeout=5.0)
-    except:
+    res = getwebsiteresponse(apiurl)
+
+    if res is None:
         click.echo("Url entered is not valid. Please input a different url.")
     else:
 
@@ -96,8 +94,9 @@ def readtelescope(apiurl):
         for url in urls:
             click.echo(click.style("\nPost Link: " + url, fg='magenta'))
             res = getwebsiteresponse(url)
-            posturls = collect_links(res.data.decode('ISO-8859-1'))
-            output_codes(posturls)
+            if res is not None:
+                posturls = collect_links(res.data.decode('ISO-8859-1'))
+                output_codes(posturls)
 
 
 def getwebsiteresponse(url):
