@@ -29,20 +29,6 @@ of the result. These are color coded for the user's convenience and for easy ide
 * Option to have the outputs in json format
     * This works with the good,bad and all output options
  
-### Installation
- Make sure that [Python](https://www.python.org/) is installed on your machine first then execute the following commands on your terminal:
- 
- Copy the code into your machine
-  
-    git clone https://github.com/rubyAnneB/linkReaper-cli.git
- Move to the linkReaper directory
-  
-    cd linkReaper-cli/linkReaper
-
-This command will install the program along with its dependencies    
-    
-    pip install .
-
 ## Usage
 
 This program has two main capabilities:
@@ -94,9 +80,9 @@ Check if the http links work with the https scheme
 Have all the http links that don't work as https outputted as json
     
     linkreaper readwebsite -s --b --j [website url]    
+
+
 ## Dependencies
 * [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
 * [Colorama](https://pypi.org/project/colorama/) - Required for colour on Windows
 * [urllib3](https://urllib3.readthedocs.io/en/latest/) - Used to manage connections and make requests
-
-
