@@ -149,8 +149,11 @@ def getwebsiteresponse(url):
         pool = urllib3.PoolManager()
         # retrieve the html data from the given url
         res = pool.request("GET", url, timeout=5.0)
+        pool.clear()
     except (urllib3.exceptions.MaxRetryError, urllib3.exceptions.LocationValueError):
         res = None
+
+
 
     return res
 
