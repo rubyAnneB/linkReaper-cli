@@ -1,8 +1,6 @@
 """This is the file that contains all of the tests for LinkReaper"""
 import unittest
 import io
-import sys
-from unittest.mock import Mock
 import linkReaper
 
 
@@ -51,10 +49,13 @@ class TestLinkReaper(unittest.TestCase):
 
     @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
     def assert_output_codes(self, links, expected_output, mock_stdout=None):
+        """tests the output of the output_codes function"""
         linkReaper.output_codes(links)
         self.assertEqual(mock_stdout.getvalue(), expected_output)
 
     def test_outout_codes(self):
+        """tests that you are getting the proper printing from the
+        website"""
         links = ["www.google.com"]
         self.assert_output_codes(links, "GOOD      - Successful  : 200 www.google.com\n")
 
