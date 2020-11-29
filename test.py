@@ -1,5 +1,6 @@
 """This is the file that contains all of the tests for LinkReaper"""
 import unittest
+from unittest import mock # pylint: disable=unused-import
 import io
 import linkReaper
 
