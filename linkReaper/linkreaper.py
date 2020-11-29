@@ -153,8 +153,6 @@ def getwebsiteresponse(url):
     except (urllib3.exceptions.MaxRetryError, urllib3.exceptions.LocationValueError):
         res = None
 
-
-
     return res
 
 
@@ -166,7 +164,7 @@ def output_codes(links, good_links=False, bad_links=False):
             pool = urllib3.PoolManager(num_pools=50)
             response = pool.request("HEAD", link, timeout=5.0)
 
-            if 300 > response.status <= 200 and not bad_links:
+            if 299 >= response.status >= 200 and not bad_links:
                 # successful responses
                 click.echo(
                     click.style(
@@ -178,7 +176,7 @@ def output_codes(links, good_links=False, bad_links=False):
                     )
                 )
 
-            elif 400 > response.status <= 300 and not good_links:
+            elif 399 >= response.status >= 300 and not good_links:
                 # redirection message
                 click.echo(
                     click.style(
@@ -190,20 +188,8 @@ def output_codes(links, good_links=False, bad_links=False):
                     )
                 )
 
-            elif 500 > response.status <= 400 and not good_links:
+            elif 499 >= response.status >= 400 and not good_links:
                 # client error responses
-                click.echo(
-                    click.style(
-                        "BAD       - Server Error: "
-                        + str(response.status)
-                        + " "
-                        + link,
-                        fg="red",
-                    )
-                )
-
-            elif 600 > response.status <= 500 and not good_links:
-                # server error response
                 click.echo(
                     click.style(
                         "BAD       - Client Error: "
@@ -214,10 +200,15 @@ def output_codes(links, good_links=False, bad_links=False):
                     )
                 )
 
-            else:
+            elif 599 >= response.status >= 500 and not good_links:
+                # server error response
                 click.echo(
                     click.style(
-                        "Unknown " + str(response.status) + " " + link, fg="red"
+                        "BAD       - Server Error: "
+                        + str(response.status)
+                        + " "
+                        + link,
+                        fg="red",
                     )
                 )
 
