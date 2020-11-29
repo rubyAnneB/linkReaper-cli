@@ -157,7 +157,12 @@ def getwebsiteresponse(url):
 
 
 def output_codes(links, good_links=False, bad_links=False):
-    """retrieves the http codes returned by the links"""
+    """retrieves the http codes returned by the links,
+    if good_links = True, bad_links = False automatically else,
+    even if bad_links= False but good_links= False, it will still
+    print bad links
+    """
+    # This is unclear and convoluted this needs to be fixed
     for link in links:
 
         try:
@@ -244,14 +249,14 @@ def output_json(links, good_links=False, bad_links=False):
             # determine whether to add the response to the list depending on the
             # options the user inputted
             if (
-                    website_response["status"] != "irregular"
-                    and 300 > website_response["status"] <= 200
-                    and not bad_links
+                website_response["status"] != "irregular"
+                and 300 > website_response["status"] <= 200
+                and not bad_links
             ):
                 json_responses.append(website_response)
             elif (
-                    website_response["status"] == "irregular"
-                    or website_response["status"] > 300
+                website_response["status"] == "irregular"
+                or website_response["status"] > 300
             ) and not good_links:
                 json_responses.append(website_response)
 

@@ -7,13 +7,6 @@ import linkReaper
 class TestLinkReaper(unittest.TestCase):
     """Test Class for LinkReaper"""
 
-    def test_get_website_response(self):
-        """Test to make sure that you are able to get the
-        response from a website"""
-        res = linkReaper.getwebsiteresponse("https://urllib3.readthedocs.io/en/latest/reference/"
-                                            "urllib3.poolmanager.html")
-        self.assertIsNot(res, None)
-
     def test_get_website_response_none(self):
         """Test to make sure that you are able to get the response from a website"""
         res = linkReaper.getwebsiteresponse("")
@@ -47,18 +40,88 @@ class TestLinkReaper(unittest.TestCase):
 
         self.assertIs(valid, True)
 
-    @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
     def assert_output_codes(self, links, expected_output, mock_stdout=None):
         """tests the output of the output_codes function"""
         linkReaper.output_codes(links)
         self.assertEqual(mock_stdout.getvalue(), expected_output)
 
-    def test_outout_codes(self):
-        """tests that you are getting the proper printing from the
-        website"""
-        links = ["www.google.com"]
-        self.assert_output_codes(links, "GOOD      - Successful  : 200 www.google.com\n")
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_good(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 200
+        url = ["www.goodwebsite.com"]
+        linkReaper.output_codes(url)
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "GOOD      - Successful  " ": 200 www.goodwebsite.com\n",
+        )
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_good_paramtrue(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 200
+        url = ["www.goodwebsite.com"]
+        linkReaper.output_codes(url, good_links=True)
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "GOOD      - Successful  " ": 200 www.goodwebsite.com\n",
+        )
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_good_paramfalse(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 200
+        url = ["www.goodwebsite.com"]
+        linkReaper.output_codes(url, bad_links=True)
+        self.assertEqual(mock_stdout.getvalue(), "")
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_bad(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 400
+        url = ["www.badwebsite.com"]
+        linkReaper.output_codes(url)
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "BAD       - Client Error" ": 400 www.badwebsite.com\n",
+        )
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_bad_paramtrue(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 400
+        url = ["www.badwebsite.com"]
+        linkReaper.output_codes(url, bad_links=True)
+        self.assertEqual(
+            mock_stdout.getvalue(),
+            "BAD       - Client Error" ": 400 www.badwebsite.com\n",
+        )
+
+    @unittest.mock.patch("sys.stdout", new_callable=io.StringIO)
+    @unittest.mock.patch("linkReaper.urllib3.PoolManager.request")
+    def get_website_response_bad_paramfalse(self, mock_request=None, mock_stdout=None):
+        """gets mock httpresponses"""
+        mock_request.return_value.status = 400
+        url = ["www.badwebsite.com"]
+        linkReaper.output_codes(url, good_links=True)
+        self.assertEqual(mock_stdout.getvalue(), "")
+
+    def test_website_response_good(self):
+        """test for good and bad website responses"""
+        self.get_website_response_good()
+        self.get_website_response_good_paramtrue()
+        self.get_website_response_good_paramfalse()
+
+        self.get_website_response_bad()
+        self.get_website_response_good_paramtrue()
+        self.get_website_response_bad_paramfalse()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
