@@ -1,5 +1,8 @@
 """This is the file that contains all of the tests for LinkReaper"""
 import unittest
+import io
+import sys
+from unittest.mock import Mock
 import linkReaper
 
 
@@ -7,7 +10,8 @@ class TestLinkReaper(unittest.TestCase):
     """Test Class for LinkReaper"""
 
     def test_get_website_response(self):
-        """Test to make sure that you are able to get the response from a website"""
+        """Test to make sure that you are able to get the
+        response from a website"""
         res = linkReaper.getwebsiteresponse("https://urllib3.readthedocs.io/en/latest/reference/"
                                             "urllib3.poolmanager.html")
         self.assertIsNot(res, None)
@@ -31,14 +35,28 @@ class TestLinkReaper(unittest.TestCase):
         with open("index2.html", "r") as file:
             links = linkReaper.collect_links(file.read(), False)
 
-        valid = False
+        valid = True
+        last = False
+        while valid and not last:
+            for link in links:
+                if "http" not in link:
+                    valid = False
+                    print(link)
 
-        for link in links:
-            if "http" in link:
-                valid = True
+                # break out of the loop
+                if link is links[-1]:
+                    last = True
 
         self.assertIs(valid, True)
 
+    @unittest.mock.patch('sys.stdout', new_callable=io.StringIO)
+    def assert_output_codes(self, links, expected_output, mock_stdout=None):
+        linkReaper.output_codes(links)
+        self.assertEqual(mock_stdout.getvalue(), expected_output)
+
+    def test_outout_codes(self):
+        links = ["www.google.com"]
+        self.assert_output_codes(links, "GOOD      - Successful  : 200 www.google.com\n")
 
 
 if __name__ == '__main__':
