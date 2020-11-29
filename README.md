@@ -81,6 +81,11 @@ Have all the http links that don't work as https outputted as json
     
     linkreaper readwebsite -s --b --j [website url]    
 
+## Coverage
+
+    pip install coverage
+
+for code coverage
 
 ## Dependencies
 * [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
