@@ -26,10 +26,13 @@ jobs:
         pip install pylint
         cd linkReaper
         pip install .
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Format code
+      run: |
+        black .
     - name: Lint with pylint
       run: |
-          pylint --rcfile=.pylintrc <linkReaper-cli>
+          cd linkReaper
+          pylint -rn -d C0103  linkReaper
     - name: Test with unittest
       run: |
         python -m unittest tests/test.py 
