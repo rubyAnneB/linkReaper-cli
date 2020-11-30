@@ -31,4 +31,4 @@ jobs:
           pylint --rcfile=.pylintrc <linkReaper-cli>
     - name: Test with unittest
       run: |
-        unittest
+        python -m unittest tests/test.py 
