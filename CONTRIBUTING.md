@@ -39,6 +39,8 @@ using pyTest as can be seen [here](tests/test_.py). Also keep in mind that the [
 has its own [testing capabilities](https://click.palletsprojects.com/en/7.x/testing/?highlight=test) that can be used to test the commands.
 A sample can be found in this [file](tests/test_.py). 
 
+To test coverage use [coverage](https://coverage.readthedocs.io/en/coverage-5.3/).        
+
 
 ## Dependencies
 * [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
