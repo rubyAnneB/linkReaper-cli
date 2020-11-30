@@ -32,7 +32,7 @@ jobs:
     - name: Lint with pylint
       run: |
           cd linkreaper
-          pylint -rn -d linkreaper
+          pylint -rn linkreaper
     - name: Test with unittest
       run: |
         python -m unittest tests/test.py 
