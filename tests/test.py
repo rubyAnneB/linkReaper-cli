@@ -6,7 +6,9 @@ import linkReaper
 
 
 # click has its own testing capabilities- add some of these in
-# todo: use click.test for testing the commands directly
+# todo: use click.test for testing the commands directly-
+# is there some way to integrate it with unnittest?
+
 
 class TestLinkReaper(unittest.TestCase):
     """Test Class for LinkReaper"""
