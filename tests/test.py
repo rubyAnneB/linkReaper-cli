@@ -2,12 +2,15 @@
 import unittest
 from unittest import mock  # pylint: disable=unused-import
 import io
+import os
 import linkReaper
 
 
 # click has its own testing capabilities- add some of these in
-# todo: use click.test for testing the commands directly-
+#  use click.test for testing the commands directly-
 # is there some way to integrate it with unnittest?
+
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), "testdata.html")
 
 
 class TestLinkReaper(unittest.TestCase):
@@ -21,7 +24,7 @@ class TestLinkReaper(unittest.TestCase):
     def test_collect_links_none(self):
         """Make sure that the function is able to read and retrieve links"""
         links = None
-        with open("../index2.html", "r") as file:
+        with open(TESTDATA_FILENAME, "r") as file:
             links = linkReaper.collect_links(file.read(), False)
 
         self.assertIsNot(links, None)
@@ -29,7 +32,7 @@ class TestLinkReaper(unittest.TestCase):
     def test_collect_links_valid(self):
         """checks that the scheme is there"""
         links = None
-        with open("../index2.html", "r") as file:
+        with open(TESTDATA_FILENAME, "r") as file:
             links = linkReaper.collect_links(file.read(), False)
 
         valid = True
