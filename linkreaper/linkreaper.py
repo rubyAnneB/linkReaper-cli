@@ -1,5 +1,5 @@
 """This is the main file that outlines the functionality of linkreaper"""
-# Name: linkReaper
+# Name: linkreaper
 # Version: 0.1
 # Author: Ruby Anne Bautista
 # Description: A cli tool for finding dead links in local files given

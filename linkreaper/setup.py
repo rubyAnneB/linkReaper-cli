@@ -5,10 +5,10 @@ setup(
     name="linkreaper",
     version="1.3",
     install_requires=["Click", "Colorama", "urllib3", "black", "pylint"],
-    py_modules=["linkReaper"],
+    py_modules=["linkreaper"],
     entry_points={
         "console_scripts": [
-            "linkreaper= linkReaper:main",
+            "linkreaper= linkreaper:main",
         ]
     },
 )
