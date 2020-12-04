@@ -6,7 +6,7 @@
 # file path and searches through web pages for dead links given url
 import json
 import re
-
+import certifi
 import click
 import urllib3
 
@@ -146,7 +146,7 @@ def readtelescope(apiurl):
 def getwebsiteresponse(url):
     """Gets the websiteresponse"""
     try:
-        pool = urllib3.PoolManager()
+        pool = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
         # retrieve the html data from the given url
         res = pool.request("GET", url, timeout=5.0)
         pool.clear()
@@ -166,7 +166,9 @@ def output_codes(links, good_links=False, bad_links=False):
     for link in links:
 
         try:
-            pool = urllib3.PoolManager(num_pools=50)
+            pool = urllib3.PoolManager(
+                num_pools=50, cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
+            )
             response = pool.request("HEAD", link, timeout=5.0)
 
             if 299 >= response.status >= 200 and not bad_links:
@@ -238,7 +240,9 @@ def output_json(links, good_links=False, bad_links=False):
         for link in progbar:
             website_response = {"url": link, "status": ""}
             try:
-                pool = urllib3.PoolManager(num_pools=50)
+                pool = urllib3.PoolManager(
+                    num_pools=50, cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
+                )
                 response = pool.request("HEAD", link, timeout=5.0)
 
                 website_response["status"] = response.status
