@@ -88,7 +88,7 @@ Have all the http links that don't work as https outputted as json
 for code coverage
 
 ## releases
-This project has been released on pypi.
+This project has been released on [pypi](https://pypi.org/project/linkreaper/).
 To install execute the following command in your terminal.
 
     pip install linkreaper==0.0.4
