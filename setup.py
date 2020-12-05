@@ -12,7 +12,7 @@ setup(
     name="linkreaper",
     author="rubyAnneB",
     author_email="bautisruby643@gmail.com",
-    version="0.0.5",
+    version="0.0.6",
     install_requires=["Click", "Colorama", "urllib3", "certifi"],
     py_modules=["linkreaper"],
     entry_points={
