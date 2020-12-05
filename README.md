@@ -115,7 +115,7 @@ setup(
     },
     description="checks for deadlinks in an html file or from a website. "
                 "Done as part of DPS 909- Seneca College",
-    package_dir={"": "src"},
+    package_dir={"": "linkreaper"},
     url="https://github.com/rubyAnneB/linkReaper-cli",
     classifiers=[
         "Programming Language :: Python :: 3",

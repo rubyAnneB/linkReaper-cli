@@ -5,7 +5,7 @@ setup(
     name="linkreaper",
     author="rubyAnneB",
     author_email="bautisruby643@gmail.com",
-    version="0.0.4",
+    version="0.0.5",
     install_requires=["Click", "Colorama", "urllib3", "certifi"],
     py_modules=["linkreaper"],
     entry_points={
@@ -13,11 +13,11 @@ setup(
             "linkreaper= linkreaper:main",
         ]
     },
-    long_description=long_description,
+    long_description=long_description,  # pylint: disable=undefined-variable
     long_description_content_type="text/markdown",
     description="checks for deadlinks in an html file or from a website. "
-                "Done as part of DPS 909- Seneca College",
-    package_dir={"": "src"},
+    "Done as part of DPS 909- Seneca College",
+    package_dir={"": "linkreaper"},
     url="https://github.com/rubyAnneB/linkReaper-cli",
     classifiers=[
         "Programming Language :: Python :: 3",
