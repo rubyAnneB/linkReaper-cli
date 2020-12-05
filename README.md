@@ -172,3 +172,4 @@ The ease of use and simplicity is really quite nice. I can almost forget the ago
 * [Click](https://click.palletsprojects.com/en/7.x/) - Package for making cli tools    
 * [Colorama](https://pypi.org/project/colorama/) - Required for colour on Windows
 * [urllib3](https://urllib3.readthedocs.io/en/latest/) - Used to manage connections and make requests
+* [certifi](https://pypi.org/project/certifi/) - Validating certificates
