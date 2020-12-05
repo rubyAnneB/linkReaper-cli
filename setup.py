@@ -1,6 +1,13 @@
 """Setup file detailing dependencies"""
 from setuptools import setup
 
+# read the contents of your README file
+from os import path
+
+this_directory = path.abspath(path.dirname(__file__))
+with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
+
 setup(
     name="linkreaper",
     author="rubyAnneB",
@@ -13,7 +20,7 @@ setup(
             "linkreaper= linkreaper:main",
         ]
     },
-    long_description=long_description,  # pylint: disable=undefined-variable
+    long_description=long_description,
     long_description_content_type="text/markdown",
     description="checks for deadlinks in an html file or from a website. "
     "Done as part of DPS 909- Seneca College",
