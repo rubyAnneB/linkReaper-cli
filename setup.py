@@ -13,6 +13,8 @@ setup(
             "linkreaper= linkreaper:main",
         ]
     },
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     description="checks for deadlinks in an html file or from a website. "
                 "Done as part of DPS 909- Seneca College",
     package_dir={"": "src"},
