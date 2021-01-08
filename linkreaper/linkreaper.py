@@ -108,6 +108,7 @@ def readwebsite(url, secure, good, bad, jsonout):
 
 def getwebsiteresponse(url, full=False, code=False):
     """Gets the websiteresponse"""
+    res = None
     try:
         pool = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
         # retrieve the html data from the given url
