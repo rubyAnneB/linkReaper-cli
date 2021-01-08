@@ -8,7 +8,47 @@ import json
 import re
 import certifi
 import click
+import click as click
 import urllib3
+
+_global_test_options = [
+
+    click.option(
+        "--secure",
+        "-s",
+        is_flag=True,
+        help="change the http link schemes into https and output results",
+    ),
+    click.option(
+        "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
+    ),
+    click.option(
+        "--bad",
+        "-b",
+        is_flag=True,
+        help="Prints all the bad links with anything other than a 200 HTTP code",
+    ),
+    click.option(
+        "--jsonout",
+        "-j",
+        is_flag=True,
+        help="Prints out links and their responses in json format",
+    ),
+    click.option(
+        "--alllinks",
+        "-a",
+        is_flag=True,
+        default=True,
+        help="Prints all the links and their status codes",
+    )
+
+]
+
+
+def global_test_options(func):
+    for option in reversed(_global_test_options):
+        func = option(func)
+    return func
 
 
 @click.group()
@@ -18,34 +58,7 @@ def main():
 
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True, readable=True))
-@click.option(
-    "--secure",
-    "-s",
-    is_flag=True,
-    help="change the http link schemes into https and output results",
-)
-@click.option(
-    "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
-)
-@click.option(
-    "--bad",
-    "-b",
-    is_flag=True,
-    help="Prints all the bad links with anything other than a 200 HTTP code",
-)
-@click.option(
-    "--jsonout",
-    "-j",
-    is_flag=True,
-    help="Prints out links and their responses in json format",
-)
-@click.option(
-    "--alllinks",
-    "-a",
-    is_flag=True,
-    default=True,
-    help="Prints all the links and their status codes",
-)
+@global_test_options
 def readfile(filepath, secure, good, bad, jsonout):
     """Read from a local file and parse through the file for links"""
     try:
@@ -70,34 +83,7 @@ def readfile(filepath, secure, good, bad, jsonout):
 
 @main.command()
 @click.argument("url", default="")
-@click.option(
-    "--secure",
-    "-s",
-    is_flag=True,
-    help="change the http link schemes into https and output results",
-)
-@click.option(
-    "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
-)
-@click.option(
-    "--bad",
-    "-b",
-    is_flag=True,
-    help="Prints all the bad links with anything other than a 200 HTTP code",
-)
-@click.option(
-    "--jsonout",
-    "-j",
-    is_flag=True,
-    help="Prints out links and their responses in json format",
-)
-# @click.option(
-#     "--alllinks",
-#     "-a",
-#     is_flag=True,
-#     default=True,
-#     help="Prints all the links and their status codes",
-# )
+@global_test_options
 def readwebsite(url, secure, good, bad, jsonout):
     """Input a url to check page for dead links"""
     res = getwebsiteresponse(url, full=True)
