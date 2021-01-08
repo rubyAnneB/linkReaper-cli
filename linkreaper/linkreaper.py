@@ -1,14 +1,54 @@
 """This is the main file that outlines the functionality of linkreaper"""
 # Name: linkreaper
-# Version: 0.1
+# Version: 0.0.6
 # Author: Ruby Anne Bautista
 # Description: A cli tool for finding dead links in local files given
 # file path and searches through web pages for dead links given url
-import json
+
 import re
 import certifi
 import click
 import urllib3
+
+_global_test_options = [
+
+    click.option(
+        "--secure",
+        "-s",
+        is_flag=True,
+        help="change the http link schemes into https and output results",
+    ),
+    click.option(
+        "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
+    ),
+    click.option(
+        "--bad",
+        "-b",
+        is_flag=True,
+        help="Prints all the bad links with anything other than a 200 HTTP code",
+    ),
+    click.option(
+        "--jsonout",
+        "-j",
+        is_flag=True,
+        help="Prints out links and their responses in json format",
+    ),
+    click.option(
+        "--alllinks",
+        "-a",
+        is_flag=True,
+        default=True,
+        help="Prints all the links and their status codes",
+    )
+
+]
+
+
+def global_test_options(func):
+    """inserts the shared options into the commands"""
+    for option in reversed(_global_test_options):
+        func = option(func)
+    return func
 
 
 @click.group()
@@ -18,34 +58,7 @@ def main():
 
 @main.command()
 @click.argument("filepath", type=click.Path(exists=True, readable=True))
-@click.option(
-    "--secure",
-    "-s",
-    is_flag=True,
-    help="change the http link schemes into https and output results",
-)
-@click.option(
-    "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
-)
-@click.option(
-    "--bad",
-    "-b",
-    is_flag=True,
-    help="Prints all the bad links with anything other than a 200 HTTP code",
-)
-@click.option(
-    "--jsonout",
-    "-j",
-    is_flag=True,
-    help="Prints out links and their responses in json format",
-)
-@click.option(
-    "--alllinks",
-    "-a",
-    is_flag=True,
-    default=True,
-    help="Prints all the links and their status codes",
-)
+@global_test_options
 def readfile(filepath, secure, good, bad, jsonout):
     """Read from a local file and parse through the file for links"""
     try:
@@ -70,37 +83,10 @@ def readfile(filepath, secure, good, bad, jsonout):
 
 @main.command()
 @click.argument("url", default="")
-@click.option(
-    "--secure",
-    "-s",
-    is_flag=True,
-    help="change the http link schemes into https and output results",
-)
-@click.option(
-    "--good", "-g", is_flag=True, help="Prints all the good links with 200 HTTP codes"
-)
-@click.option(
-    "--bad",
-    "-b",
-    is_flag=True,
-    help="Prints all the bad links with anything other than a 200 HTTP code",
-)
-@click.option(
-    "--jsonout",
-    "-j",
-    is_flag=True,
-    help="Prints out links and their responses in json format",
-)
-# @click.option(
-#     "--alllinks",
-#     "-a",
-#     is_flag=True,
-#     default=True,
-#     help="Prints all the links and their status codes",
-# )
+@global_test_options
 def readwebsite(url, secure, good, bad, jsonout):
     """Input a url to check page for dead links"""
-    res = getwebsiteresponse(url)
+    res = getwebsiteresponse(url, full=True)
 
     if res is None:
         click.echo("Url entered is not valid. Please input a different url.")
@@ -120,37 +106,21 @@ def readwebsite(url, secure, good, bad, jsonout):
             output_codes(urls, good, bad)
 
 
-@main.command()
-@click.argument("apiurl", default="")
-def readtelescope(apiurl):
-    """The command that reads from the telescope api and looks through the
-    most recent blog posts for broken links"""
-
-    res = getwebsiteresponse(apiurl)
-
-    if res is None:
-        click.echo("Url entered is not valid. Please input a different url.")
-    else:
-
-        posts = json.loads(res.data.decode("ISO-8859-1"))
-        urls = collect_links(posts, api=True, baseurl=apiurl)
-
-        for url in urls:
-            click.echo(click.style("\nPost Link: " + url, fg="magenta"))
-            res = getwebsiteresponse(url)
-            if res is not None:
-                posturls = collect_links(res.data.decode("ISO-8859-1"))
-                output_codes(posturls)
-
-
-def getwebsiteresponse(url):
+def getwebsiteresponse(url, full=False, code=False):
     """Gets the websiteresponse"""
+    res = None
     try:
         pool = urllib3.PoolManager(cert_reqs="CERT_REQUIRED", ca_certs=certifi.where())
         # retrieve the html data from the given url
-        res = pool.request("GET", url, timeout=5.0)
+
+        if full:
+            res = pool.request("GET", url, timeout=5.0)
+        elif code:
+            res = pool.request("HEAD", url, timeout=5.0)
+
         pool.clear()
-    except (urllib3.exceptions.MaxRetryError, urllib3.exceptions.LocationValueError):
+
+    except urllib3.exceptions.HTTPError:
         res = None
 
     return res
@@ -165,11 +135,13 @@ def output_codes(links, good_links=False, bad_links=False):
     # This is unclear and convoluted this needs to be fixed
     for link in links:
 
-        try:
-            pool = urllib3.PoolManager(
-                num_pools=50, cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
+        response = getwebsiteresponse(link, code=True)
+
+        if not good_links and response is None:
+            click.echo(
+                click.style("Irregular link          : " + link, fg="yellow")
             )
-            response = pool.request("HEAD", link, timeout=5.0)
+        else:
 
             if 299 >= response.status >= 200 and not bad_links:
                 # successful responses
@@ -219,13 +191,6 @@ def output_codes(links, good_links=False, bad_links=False):
                     )
                 )
 
-        except urllib3.exceptions.HTTPError:
-            # irregular responses- may return 200 but behaviour is irregular
-            if not good_links:
-                click.echo(
-                    click.style("Irregular link          : " + link, fg="yellow")
-                )
-
 
 def output_json(links, good_links=False, bad_links=False):
     """Goes through a list of links, retrieves the response code and outputs the results in
@@ -240,10 +205,8 @@ def output_json(links, good_links=False, bad_links=False):
         for link in progbar:
             website_response = {"url": link, "status": ""}
             try:
-                pool = urllib3.PoolManager(
-                    num_pools=50, cert_reqs="CERT_REQUIRED", ca_certs=certifi.where()
-                )
-                response = pool.request("HEAD", link, timeout=5.0)
+
+                response = getwebsiteresponse(link, code=True)
 
                 website_response["status"] = response.status
 
@@ -253,14 +216,14 @@ def output_json(links, good_links=False, bad_links=False):
             # determine whether to add the response to the list depending on the
             # options the user inputted
             if (
-                website_response["status"] != "irregular"
-                and 300 > website_response["status"] <= 200
-                and not bad_links
+                    website_response["status"] != "irregular"
+                    and 300 > website_response["status"] <= 200
+                    and not bad_links
             ):
                 json_responses.append(website_response)
             elif (
-                website_response["status"] == "irregular"
-                or website_response["status"] > 300
+                    website_response["status"] == "irregular"
+                    or website_response["status"] > 300
             ) and not good_links:
                 json_responses.append(website_response)
 
