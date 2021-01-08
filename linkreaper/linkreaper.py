@@ -4,11 +4,10 @@
 # Author: Ruby Anne Bautista
 # Description: A cli tool for finding dead links in local files given
 # file path and searches through web pages for dead links given url
-import json
+
 import re
 import certifi
 import click
-import click as click
 import urllib3
 
 _global_test_options = [
@@ -46,6 +45,7 @@ _global_test_options = [
 
 
 def global_test_options(func):
+    """inserts the shared options into the commands"""
     for option in reversed(_global_test_options):
         func = option(func)
     return func
@@ -104,29 +104,6 @@ def readwebsite(url, secure, good, bad, jsonout):
             output_json(urls, good, bad)
         else:
             output_codes(urls, good, bad)
-
-
-@main.command()
-@click.argument("apiurl", default="")
-def readtelescope(apiurl):
-    """The command that reads from the telescope api and looks through the
-    most recent blog posts for broken links"""
-
-    res = getwebsiteresponse(apiurl, full=True)
-
-    if res is None:
-        click.echo("Url entered is not valid. Please input a different url.")
-    else:
-
-        posts = json.loads(res.data.decode("ISO-8859-1"))
-        urls = collect_links(posts, api=True, baseurl=apiurl)
-
-        for url in urls:
-            click.echo(click.style("\nPost Link: " + url, fg="magenta"))
-            res = getwebsiteresponse(url)
-            if res is not None:
-                posturls = collect_links(res.data.decode("ISO-8859-1"))
-                output_codes(posturls)
 
 
 def getwebsiteresponse(url, full=False, code=False):
