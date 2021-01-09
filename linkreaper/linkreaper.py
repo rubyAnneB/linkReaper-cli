@@ -33,13 +33,6 @@ _global_test_options = [
         is_flag=True,
         help="Prints out links and their responses in json format",
     ),
-    click.option(
-        "--alllinks",
-        "-a",
-        is_flag=True,
-        default=True,
-        help="Prints all the links and their status codes",
-    )
 
 ]
 
@@ -70,7 +63,6 @@ def readfile(filepath, secure, good, bad, jsonout):
 
     else:
         # if the user inputted both good and bad, all the links will be displayed and
-        # 'allinks' will override both options
         if bad and good:
             bad = False
             good = False
@@ -137,6 +129,7 @@ def output_codes(links, good_links=False, bad_links=False):
 
         response = getwebsiteresponse(link, code=True)
 
+        # the website is invalid or had an error of some kind
         if not good_links and response is None:
             click.echo(
                 click.style("Irregular link          : " + link, fg="yellow")
@@ -204,15 +197,12 @@ def output_json(links, good_links=False, bad_links=False):
     with click.progressbar(links) as progbar:
         for link in progbar:
             website_response = {"url": link, "status": ""}
-            try:
+            response = getwebsiteresponse(link, code=True)
 
-                response = getwebsiteresponse(link, code=True)
-
-                website_response["status"] = response.status
-
-            except urllib3.exceptions.HTTPError:
+            if response is None and not good_links:
                 website_response["status"] = "irregular"
-
+            else:
+                website_response["status"] = response.status
             # determine whether to add the response to the list depending on the
             # options the user inputted
             if (
@@ -239,7 +229,7 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
 
     if secure:  # if the user utilises the -s option
 
-        urls_raw = re.findall(r"http?:[a-zA-Z0-9_.+-/#~%]+", raw_data)
+        urls_raw = re.findall(r"http?:[a-zA-Z0-9_.+-/#~%&=]+", raw_data)
         # get rid of duplicate links
         urls_raw = list(dict.fromkeys(urls_raw))
 
@@ -251,7 +241,7 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
             unique_urls.append(baseurl + "/" + postid["id"])
     else:
 
-        urls_raw = re.findall(r"https?:[a-zA-Z0-9_.+-/#~%]+", raw_data)
+        urls_raw = re.findall(r"https?:[a-zA-Z0-9_.+-/#~%&=]+", raw_data)
         # get rid of duplicate links
         unique_urls = list(dict.fromkeys(urls_raw))
 
