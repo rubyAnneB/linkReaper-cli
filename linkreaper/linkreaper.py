@@ -220,7 +220,7 @@ def output_json(links, good_links=False, bad_links=False):
     click.echo(json_responses)
 
 
-def collect_links(raw_data, secure=False, api=False, baseurl=""):
+def collect_links(raw_data, secure=False):
     """parses through the raw data to find links and removes
     duplicates, if secure is true, parses through for http and
     turns them into https"""
@@ -236,9 +236,7 @@ def collect_links(raw_data, secure=False, api=False, baseurl=""):
         for link in urls_raw:
             # changes the scheme of the links from http to https
             unique_urls.append(re.sub("http", "https", link))
-    elif api:
-        for postid in raw_data:
-            unique_urls.append(baseurl + "/" + postid["id"])
+
     else:
 
         urls_raw = re.findall(r"https?:[a-zA-Z0-9_.+-/#~%&=]+", raw_data)
